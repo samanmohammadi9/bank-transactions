@@ -19,7 +19,7 @@ return new class extends Migration
             $table->foreign('user_id')->references('id')
                 ->on('users')->onDelete('cascade');
             $table->string('account_number')->unique();
-            $table->bigInteger('balance');
+            $table->bigInteger('balance')->comment('total balance ');
             $table->timestamps();
         });
     }
