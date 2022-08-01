@@ -4,6 +4,7 @@ namespace App\Http\Controllers\api\v1;
 
 use App\Http\Controllers\common\CardController;
 use App\Http\Controllers\Controller;
+use App\Models\Account;
 use App\Models\Card;
 use App\Models\TempTransaction;
 use App\Models\Transaction;
@@ -80,8 +81,14 @@ class TransactionController extends Controller
             $origin->update([
                 'balance' => $origin->balance - ($amount + 5000)
             ]);
+            $origin->account()->update([
+                'balance' => $origin->account()->balance - $amount+5000
+            ]);
             $destination->update([
                 'balance' => $destination->balance + $amount
+            ]);
+            $destination->account()->update([
+                'balance' => $destination->account()->balance + $amount
             ]);
         }
 
