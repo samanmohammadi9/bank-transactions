@@ -13,5 +13,15 @@ class Transaction extends Model
         'amount',
         'status'
     ];
+
+    public function origin_card()
+    {
+        return $this->belongsTo(Card::class,'origin');
+    }
+
+    public function destination_card()
+    {
+        return $this->belongsTo(Card::class,'destination');
+    }
     use HasFactory;
 }
