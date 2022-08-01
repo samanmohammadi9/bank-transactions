@@ -17,3 +17,8 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+Route::prefix('/v1')->namespace('App\Http\Controllers\api\v1') ->group(function(){
+    Route::post('/transfer/temp','TransactionController@reserve_transaction');
+    Route::post('/transfer/confirm','TransactionController@confirm_transaction');
+}
+);
