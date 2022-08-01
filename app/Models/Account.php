@@ -12,5 +12,14 @@ class Account extends Model
         'account_number',
         'balance'
     ];
+
+    public function user(){
+        return $this->belongsTo(User::class,'user_id');
+    }
+
+    public function cards()
+    {
+        return $this->hasMany(Card::class,'account_id');
+    }
     use HasFactory;
 }
