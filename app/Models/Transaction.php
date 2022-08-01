@@ -11,7 +11,6 @@ class Transaction extends Model
         'origin',
         'destination',
         'amount',
-        'status'
     ];
 
     public function origin_card()
