@@ -43,10 +43,13 @@ class TransactionController extends Controller
             'destination' => $request->destination,
             'amount' => $request->amount
         ]);
+        $destination=Card::where('card_number',$request->destination)->first();
         return json_encode([
             'status' => 'success',
             'data' => [
-                $temp_transaction
+                'Card_number' => $request->destination,
+                'Account_number' => $destination->account()->account_number,
+                'Name' => $destination->account()->user()->name,
             ]
         ]);
     }
@@ -108,6 +111,8 @@ class TransactionController extends Controller
             $temp_transaction->update([
                 'status' => 1
             ]);
+            DB::insert('insert into fees (amount, transaction_id) values (?, ?)',
+                [5000, $transaction->id]);
             return json_encode([
                 'status' => 'success',
                 'data' => $transaction
