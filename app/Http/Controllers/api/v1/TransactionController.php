@@ -53,10 +53,21 @@ class TransactionController extends Controller
     public function confirm_transaction(Request $request)
     {
         $temp_transaction=TempTransaction::find($request->id);
+        if($temp_transaction->status!=0){
+            return json_encode([
+                'status' => 'failed',
+                'data' => [
+                    'Request Not Available Or Expired'
+                ]
+            ]);
+        }
         $origin=Card::where('card_number',$temp_transaction->origin)->first();
         $destination = Card::where('card_number',$temp_transaction->destination)->first();
         $amount=$temp_transaction->amount;
         if($request->pin != $origin->pin){
+            $temp_transaction->update([
+                'status' => 2
+            ]);
             return json_encode([
                 'status' => 'failed',
                 'data' => [
@@ -65,6 +76,9 @@ class TransactionController extends Controller
             ]);
         }
         elseif($origin->balance<($amount)+5000){
+            $temp_transaction->update([
+                'status' => 2
+            ]);
             return json_encode([
                 'status' => 'failed',
                 'data' => [
@@ -89,6 +103,13 @@ class TransactionController extends Controller
             ]);
             $destination->account()->update([
                 'balance' => $destination->account()->balance + $amount
+            ]);
+            $temp_transaction->update([
+                'status' => 1
+            ]);
+            return json_encode([
+                'status' => 'success',
+                'data' => $transaction
             ]);
         }
 
