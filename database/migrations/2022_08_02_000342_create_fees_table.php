@@ -18,7 +18,6 @@ return new class extends Migration
             $table->bigInteger('transaction_id');
             $table->integer('amount')->default(5000);
             $table->foreign('transaction_id')->references('id')->on('transactions');
-            $table->timestamps();
         });
     }
 
