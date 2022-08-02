@@ -4,10 +4,12 @@ namespace App\Http\Controllers\api\v1;
 
 use App\Http\Controllers\common\CardController;
 use App\Http\Controllers\Controller;
+use App\Models\Account;
 use App\Models\Card;
 use App\Models\TempTransaction;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 
 class TransactionController extends Controller
@@ -52,10 +54,21 @@ class TransactionController extends Controller
     public function confirm_transaction(Request $request)
     {
         $temp_transaction=TempTransaction::find($request->id);
+        if($temp_transaction->status!=0){
+            return json_encode([
+                'status' => 'failed',
+                'data' => [
+                    'Request Not Available Or Expired'
+                ]
+            ]);
+        }
         $origin=Card::where('card_number',$temp_transaction->origin)->first();
         $destination = Card::where('card_number',$temp_transaction->destination)->first();
         $amount=$temp_transaction->amount;
         if($request->pin != $origin->pin){
+            $temp_transaction->update([
+                'status' => 2
+            ]);
             return json_encode([
                 'status' => 'failed',
                 'data' => [
@@ -64,6 +77,9 @@ class TransactionController extends Controller
             ]);
         }
         elseif($origin->balance<($amount)+5000){
+            $temp_transaction->update([
+                'status' => 2
+            ]);
             return json_encode([
                 'status' => 'failed',
                 'data' => [
@@ -80,8 +96,21 @@ class TransactionController extends Controller
             $origin->update([
                 'balance' => $origin->balance - ($amount + 5000)
             ]);
+            $origin->account()->update([
+                'balance' => $origin->account()->balance - $amount+5000
+            ]);
             $destination->update([
                 'balance' => $destination->balance + $amount
+            ]);
+            $destination->account()->update([
+                'balance' => $destination->account()->balance + $amount
+            ]);
+            $temp_transaction->update([
+                'status' => 1
+            ]);
+            return json_encode([
+                'status' => 'success',
+                'data' => $transaction
             ]);
         }
 
