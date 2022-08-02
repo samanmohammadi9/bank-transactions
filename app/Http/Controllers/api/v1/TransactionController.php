@@ -43,10 +43,13 @@ class TransactionController extends Controller
             'destination' => $request->destination,
             'amount' => $request->amount
         ]);
+        $destination=Card::where('card_number',$request->destination)->first();
         return json_encode([
             'status' => 'success',
             'data' => [
-                $temp_transaction
+                'Card_number' => $request->destination,
+                'Account_number' => $destination->account()->account_number,
+                'Name' => $destination->account()->user()->name,
             ]
         ]);
     }
