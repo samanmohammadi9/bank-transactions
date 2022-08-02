@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\api\v1;
 
 use App\Http\Controllers\common\CardController;
+use App\Http\Controllers\common\NumbersController;
 use App\Http\Controllers\Controller;
 use App\Models\Account;
 use App\Models\Card;
@@ -16,6 +17,9 @@ class TransactionController extends Controller
 {
     public function reserve_transaction(Request $request)
     {
+        $numberController=new NumbersController();
+        $request->origin = $numberController->convert_string($request->origin);
+        $request->destination = $numberController->convert_string($request->destination);
         $card_errors=$this->validate_cards($request->origin,$request->destination);
         if(!empty($card_errors)){
             return json_encode([
