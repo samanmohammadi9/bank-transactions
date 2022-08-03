@@ -20,6 +20,7 @@ class TransactionController extends Controller
         $numberController=new NumbersController();
         $request->origin = $numberController->convert_string($request->origin);
         $request->destination = $numberController->convert_string($request->destination);
+        $request->amount = $numberController->convert_string($request->amount);
         $card_errors=$this->validate_cards($request->origin,$request->destination);
         if(!empty($card_errors)){
             return json_encode([
