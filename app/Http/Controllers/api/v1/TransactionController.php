@@ -52,16 +52,17 @@ class TransactionController extends Controller
         return json_encode([
             'status' => 'success',
             'data' => [
-                'Card_number' => $request->destination,
-                'Account_number' => $destination->account()->account_number,
-                'Name' => $destination->account()->user()->name,
+                'temp_id' => $temp_transaction->id,
+                'card_number' => $request->destination,
+                'account_number' => $destination->account()->account_number,
+                'name' => $destination->account()->user()->name,
             ]
         ]);
     }
 
     public function confirm_transaction(Request $request)
     {
-        $temp_transaction=TempTransaction::find($request->id);
+        $temp_transaction=TempTransaction::find($request->temp_id);
         if($temp_transaction->status!=0){
             return json_encode([
                 'status' => 'failed',
