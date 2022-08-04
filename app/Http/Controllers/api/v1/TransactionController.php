@@ -118,6 +118,15 @@ class TransactionController extends Controller
             ]);
             DB::insert('insert into fees (amount, transaction_id) values (?, ?)',
                 [5000, $transaction->id]);
+
+            $sms_driver = "App\\Http\\Classes\\".Env('SMS_DRIVER')."SMSSender";
+            $notification_sender = new $sms_driver();
+
+            $notification_sender->send_notification(
+                $origin->account()->user()->phone,
+                $destination->account()->user()->phone,
+                $amount
+            );
             return json_encode([
                 'status' => 'success',
                 'data' => $transaction
