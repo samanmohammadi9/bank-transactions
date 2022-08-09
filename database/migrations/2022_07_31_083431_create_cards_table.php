@@ -16,10 +16,10 @@ return new class extends Migration
         Schema::create('cards', function (Blueprint $table) {
             $table->id();
             $table->string('card_number')->unique();
-            $table->bigInteger('account_id');
+            $table->unsignedBigInteger('account_id');
             $table->foreign('account_id')->references('id')
                 ->on('accounts')->onDelete('cascade');
-            $table->bigInteger('balance');
+            $table->unsignedBigInteger('balance');
             $table->char('pin',4);
             $table->timestamps();
         });
