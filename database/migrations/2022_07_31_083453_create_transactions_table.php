@@ -21,7 +21,7 @@ return new class extends Migration
                 ->on('cards')->onDelete('cascade');
             $table->foreign('destination')->references('card_number')
                 ->on('cards')->onDelete('cascade');
-            $table->bigInteger('amount');
+            $table->unsignedBigInteger('amount');
             $table->timestamps();
         });
     }

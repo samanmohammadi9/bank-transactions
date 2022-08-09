@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('fees', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('transaction_id');
+            $table->unsignedBigInteger('transaction_id');
             $table->integer('amount')->default(5000);
             $table->foreign('transaction_id')->references('id')->on('transactions');
         });
