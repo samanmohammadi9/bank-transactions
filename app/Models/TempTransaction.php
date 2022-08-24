@@ -13,4 +13,13 @@ class TempTransaction extends Model
         'amount',
     ];
     use HasFactory;
+
+    public function store($origin , $destination , $amount)
+    {
+        $this->query()->create([
+            'origin' => $origin,
+            'destination' => $destination,
+            'amount' => $amount
+        ]);
+    }
 }

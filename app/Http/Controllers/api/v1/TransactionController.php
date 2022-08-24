@@ -5,59 +5,28 @@ namespace App\Http\Controllers\api\v1;
 use App\Http\Controllers\common\CardController;
 use App\Http\Controllers\common\NumbersController;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\TransactionRequest;
 use App\Models\Account;
 use App\Models\Card;
 use App\Models\TempTransaction;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Validator;
 
 class TransactionController extends Controller
 {
-    public function reserve_transaction(Request $request)
+    protected TempTransaction $tempTransaction;
+    public function __construct()
     {
-        $numberController=new NumbersController();
-        $request->origin = $numberController->convert_string($request->origin);
-        $request->destination = $numberController->convert_string($request->destination);
-        $request->amount = $numberController->convert_string($request->amount);
-        $card_errors=$this->validate_cards($request->origin,$request->destination);
-        if(!empty($card_errors)){
-            return json_encode([
-                'status' => 'failed',
-                'data' => $card_errors
-            ],true);
-        }
-        $card_errors=$this->find_cards($request->origin,$request->destination);
-        if(!empty($card_errors)){
-            return json_encode([
-                'status' => 'failed',
-                'data' => $card_errors
-            ],true);
-        }
+        $this->tempTransaction = new TempTransaction();
+    }
 
-        if($request->amount <10000 || $request->amount > 500000000){
-            return json_encode([
-                'status' => 'failed',
-                'data' => ['Invalid Amount']
-            ]);
-        }
+    public function reserve_transaction(TransactionRequest $request)
+    {
+        $transactionData=$request->validated();
+        //$this->tempTransaction->store( $transactionData['origin'] , $transactionData['destination'] , $transactionData['amount'] );
 
-        $temp_transaction=TempTransaction::create([
-            'origin' => $request->origin,
-            'destination' => $request->destination,
-            'amount' => $request->amount
-        ]);
-        $destination=Card::where('card_number',$request->destination)->first();
-        return json_encode([
-            'status' => 'success',
-            'data' => [
-                'temp_id' => $temp_transaction->id,
-                'card_number' => $request->destination,
-                'account_number' => $destination->account()->account_number,
-                'name' => $destination->account()->user()->name,
-            ]
-        ]);
     }
 
     public function confirm_transaction(Request $request)
